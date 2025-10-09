@@ -1,0 +1,7 @@
+- name: testing import vs include
+  ansible.builtin.debug:
+    msg: "Hi, How are you?"
+
+- name: testing import vs include again
+  ansible.builtin.debug:
+    msgg: "Hi, How are you?"

@@ -1,0 +1,6 @@
+- name: "setup server"
+  hosts: local
+  connnection: local
+  become: yes
+  roles:
+  - include-vs-import
