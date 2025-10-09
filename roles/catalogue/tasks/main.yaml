@@ -1,47 +1,32 @@
 - name: app setup
-  import_role:
+  ansible.builtin.import_role:
     name: common
-    tasks_from: app-setup
-  tags:
-  - deployment
+    tasks_from: app-setup.yaml
 
-- name: nodejs setup
-  include_role:
+- name: app setup
+  ansible.builtin.import_role:
     name: common
-    tasks_from: nodejs
+    tasks_from: nodejs.yaml
 
-- name: copy mongodb repo
+- name: copy mongo repo
   ansible.builtin.copy:
     src: mongo.repo
     dest: /etc/yum.repos.d/mongo.repo
 
 - name: install mongodb client
-  ansible.builtin.dnf:
+  ansible.builtin.package:
     name: mongodb-mongosh
     state: present
 
-- name: check products loaded or not
-  ansible.builtin.command: mongosh --host {{ MONGODB_HOST }} --eval 'db.getMongo().getDBNames().indexOf("catalogue")'
+- name: connnect to mongodb catalogue
+  ansible.builtin.command: mongosh {{ MONGODB_HOST }} --quiet --eval "db.getMongo().getDBNames().indexOf('catalogue')"
   register: catalogue_output
-  # ignore_errors: true
-  # ignore_unreachable: true
 
-- name: print catalogue output
-  ansible.builtin.debug:
-    msg: "{{ catalogue_output }}"
-  # ignore_errors: true
-  # ignore_unreachable: true
-
-- name: load products
-  ansible.builtin.shell: mongosh --host {{ MONGODB_HOST }} < /app/db/master-data.js
+- name: load products into mongodb
+  ansible.builtin.shell: mongosh --host {{ MONGODB_HOST }} </app/db/master-data.js
   when: catalogue_output.stdout | int < 0
-  # ignore_errors: true
-  # ignore_unreachable: true
 
-- name: systemd setup
-  import_role:
+- name: app setup
+  ansible.builtin.import_role:
     name: common
-    tasks_from: systemd.yaml
-  tags: 
-  - deployment
-
+    tasks_from: system-setup.yaml
