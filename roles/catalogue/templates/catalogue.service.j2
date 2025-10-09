@@ -4,7 +4,7 @@ Description = Catalogue Service
 [Service]
 User=roboshop
 Environment=MONGO=true
-// highlight-startt
+// highlight-starttt
 Environment=MONGO_URL="mongodb://{{ MONGODB_HOST }}:27017/catalogue"
 // highlight-end
 ExecStart=/bin/node /app/server.js
